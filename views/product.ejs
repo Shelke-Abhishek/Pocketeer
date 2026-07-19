@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="<%= settings.logo %>">
+    
+    <title><%= product.name %> - Pocketeer Review</title>
+    <meta name="description" content="<%= product.shortDesc %>">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <nav class="top-navbar">
+        <div class="nav-content">
+            <div class="nav-left">
+                <a href="/" style="color:var(--text-main); font-size:1.5em; margin-right: 15px;"><i class="fas fa-arrow-left"></i></a>
+                <a href="/"><img src="<%= settings.logo %>" alt="Pocketeer Logo" class="nav-logo"></a>
+            </div>
+            <div class="nav-right">
+                <a href="/blog" style="color:var(--text-main); font-size:1.1em; font-weight:600; text-decoration:none; margin-right:20px;">Blog</a>
+                <button class="theme-toggle" id="theme-toggle"><i class="fas fa-moon"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content product-detail-layout">
+        <div class="product-hero-image">
+            <img src="<%= product.image %>" alt="<%= product.name %>">
+        </div>
+        
+        <div class="product-content">
+            <span class="category-badge"><%= product.category %></span>
+            <h1 style="margin-top: 15px;"><%= product.name %></h1>
+            
+            <div class="pocketeer-review-box">
+                <h3><i class="fas fa-star" style="color:var(--accent);"></i> Pocketeer's Take</h3>
+                <p><%= product.fullReview %></p>
+            </div>
+
+            <a href="/redirect?id=<%= product.id %>" class="amazon-btn" target="_blank" rel="nofollow">
+                <i class="fab fa-amazon"></i> Shop on Amazon
+            </a>
+            <p class="commission-text" style="text-align: center; margin-top: 10px;">As an Amazon Associate I earn from qualifying purchases.</p>
+        </div>
+    </main>
+
+    <div class="main-content">
+        <hr class="divider">
+        <div class="customer-reviews-section">
+            <h2>Customer Reviews</h2>
+            <% if (reviews && reviews.length > 0) { %>
+                <div class="reviews-list">
+                    <% reviews.forEach(function(review) { %>
+                        <div class="review-card">
+                            <div class="review-header">
+                                <strong><%= review.name %></strong>
+                                <span class="stars">
+                                    <% for(let i=0; i<5; i++) { %>
+                                        <i class="fa fa-star <%= i < review.rating ? 'checked' : 'unchecked' %>"></i>
+                                    <% } %>
+                                </span>
+                            </div>
+                            <p class="review-comment" style="margin-top:5px;"><%= review.comment %></p>
+                        </div>
+                    <% }); %>
+                </div>
+            <% } else { %>
+                <p class="no-reviews" style="color:var(--text-muted);">No reviews yet. Be the first to share your thoughts!</p>
+            <% } %>
+
+            <div class="add-review-box">
+                <h3>Leave a Review</h3>
+                <form action="/product/<%= product.id %>/review" method="POST">
+                    <input type="text" name="name" placeholder="Your Name" required>
+                    <select name="rating" required>
+                        <option value="5">5 - Excellent</option>
+                        <option value="4">4 - Good</option>
+                        <option value="3">3 - Okay</option>
+                        <option value="2">2 - Poor</option>
+                        <option value="1">1 - Terrible</option>
+                    </select>
+                    <textarea name="comment" rows="3" placeholder="Write your review here..." required></textarea>
+                    <button type="submit" class="submit-btn">Submit Review</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <%- include('footer.ejs', {reviews: reviews, settings: settings}) %>
+
+    <script src="/script.js"></script>
+</body>
+</html>

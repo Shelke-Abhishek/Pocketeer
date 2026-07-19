@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="<%= settings.logo %>">
+    <title>Pocketeer - Premium Curated Picks</title>
+    <meta name="description" content="Shop the best recommended products curated by Pocketeer.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+    <nav class="top-navbar" id="top-navbar">
+        <div class="nav-content">
+            <div class="nav-left">
+                <button class="hamburger-btn" id="hamburger-btn"><i class="fas fa-bars"></i></button>
+                <a href="/"><img src="<%= settings.logo %>" alt="Pocketeer Logo" class="nav-logo"></a>
+            </div>
+            
+            <div class="nav-center">
+                <div class="search-container" id="search-container">
+                <button class="search-back-btn" id="search-back-btn"><i class="fas fa-arrow-left"></i></button>
+                <i class="fas fa-search search-icon" id="search-trigger"></i>
+                <input type="text" id="product-search" placeholder="Search for aesthetics...">
+            </div>
+            </div>
+
+            <div class="nav-right">
+                <a href="/blog" style="color:var(--text-main); font-size:1.1em; font-weight:600; text-decoration:none; margin-right:20px;">Blog</a>
+                <button class="theme-toggle" id="theme-toggle"><i class="fas fa-moon"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar Menu -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3 style="margin:0;">Categories</h3>
+            <button class="close-btn" id="close-sidebar"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="sidebar-categories" id="categories-bar">
+            <button class="category-btn active" data-category="all"><i class="fas fa-th-large" style="width: 25px;"></i> All Items</button>
+            <button class="category-btn" data-category="skincare"><i class="fas fa-pump-soap" style="width: 25px;"></i> Skincare</button>
+            <button class="category-btn" data-category="perfume"><i class="fas fa-spray-can" style="width: 25px;"></i> Perfumes</button>
+            <button class="category-btn" data-category="tech"><i class="fas fa-laptop" style="width: 25px;"></i> Tech</button>
+            <button class="category-btn" data-category="haircare"><i class="fas fa-cut" style="width: 25px;"></i> Haircare</button>
+            <button class="category-btn" data-category="fitness"><i class="fas fa-dumbbell" style="width: 25px;"></i> Fitness</button>
+            <button class="category-btn" data-category="dressing"><i class="fas fa-tshirt" style="width: 25px;"></i> Dressing</button>
+            <button class="category-btn" data-category="sports"><i class="fas fa-volleyball-ball" style="width: 25px;"></i> Sports</button>
+            <button class="category-btn" data-category="groceries"><i class="fas fa-shopping-basket" style="width: 25px;"></i> Groceries</button>
+            <button class="category-btn" data-category="kitchen"><i class="fas fa-utensils" style="width: 25px;"></i> Kitchen</button>
+            <button class="category-btn" data-category="pet"><i class="fas fa-paw" style="width: 25px;"></i> Pet</button>
+        </div>
+        <div class="admin-link-wrapper">
+            <a href="/blog" class="admin-link" style="display: block; margin-bottom: 10px;"><i class="fas fa-book-open"></i> View Blog</a>
+            <a href="/admin" class="admin-link"><i class="fas fa-lock"></i> Admin Login</a>
+        </div>
+    </div>
+
+    <!-- Responsive Hero Banner using Picture tag -->
+    <div class="hero-banner-container">
+        <picture>
+            <source media="(max-width: 768px)" srcset="<%= settings.bannerMobile %>">
+            <source media="(max-width: 1024px)" srcset="<%= settings.bannerTablet %>">
+            <img src="<%= settings.bannerDesktop %>" alt="Hero Banner">
+        </picture>
+    </div>
+
+    <main class="main-content">
+        <div class="product-grid" id="product-grid">
+            <% products.forEach(function(product) { %>
+                <div class="product-card" data-name="<%= product.name %>" data-category="<%= product.category %>">
+                    <a href="/product/<%= product.id %>" class="card-link-wrapper">
+                        <div class="product-image">
+                            <!-- Natural aspect ratios for Masonry! -->
+                            <img src="<%= product.image %>" alt="<%= product.name %>" loading="lazy">
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-title"><%= product.name %></h3>
+                            <p style="font-size: 0.9em; color: var(--text-muted); margin-top: 8px; line-height: 1.4;"><%= product.shortDesc %></p>
+                        </div>
+                    </a>
+                </div>
+            <% }); %>
+        </div>
+    </main>
+
+    <%- include('footer.ejs', {reviews: reviews, settings: settings}) %>
+
+    <!-- Popup Container -->
+    <div id="purchase-popup" class="purchase-popup">
+        <img id="popup-img" src="" alt="Product">
+        <div class="purchase-popup-text">
+            <strong id="popup-title"></strong>
+            <span id="popup-desc"></span>
+        </div>
+    </div>
+    
+    <script>
+        window.POCK_PRODUCTS = <%- JSON.stringify(products) %>;
+    </script>
+    <script src="/script.js"></script>
+</body>
+</html>

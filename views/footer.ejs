@@ -1,0 +1,34 @@
+<div class="marquee-container" style="background: var(--accent); color: white; padding: 12px 0; overflow: hidden; white-space: nowrap; margin-top: 60px;">
+    <div class="marquee-content" style="display: inline-block; animation: scroll 30s linear infinite;">
+        <% if (reviews && reviews.length > 0) { %>
+            <% reviews.forEach(r => { %>
+                <span style="margin-right: 80px; font-weight: 600;">
+                    <% for(let i=0; i<r.rating; i++) { %><i class="fas fa-star" style="font-size:0.9em; color: #ffd700;"></i><% } %> 
+                    "<%= r.comment %>" — <%= r.name %>
+                </span>
+            <% }) %>
+            <!-- Duplicate for seamless loop -->
+            <% reviews.forEach(r => { %>
+                <span style="margin-right: 80px; font-weight: 600;">
+                    <% for(let i=0; i<r.rating; i++) { %><i class="fas fa-star" style="font-size:0.9em; color: #ffd700;"></i><% } %> 
+                    "<%= r.comment %>" — <%= r.name %>
+                </span>
+            <% }) %>
+        <% } else { %>
+            <span style="margin-right: 80px; font-weight: 600;">Welcome to Pocketeer! Enjoy our premium curated picks.</span>
+            <span style="margin-right: 80px; font-weight: 600;">Welcome to Pocketeer! Enjoy our premium curated picks.</span>
+        <% } %>
+    </div>
+</div>
+
+<footer class="site-footer" style="margin-top: 0; border-top: none;">
+    <div class="footer-socials" style="margin-bottom: 20px; display:flex; justify-content:center; gap: 20px;">
+        <a href="#" style="color:var(--text-muted); font-size: 1.5em; transition: color 0.2s;"><i class="fab fa-instagram"></i></a>
+        <a href="#" style="color:var(--text-muted); font-size: 1.5em; transition: color 0.2s;"><i class="fab fa-pinterest"></i></a>
+        <a href="#" style="color:var(--text-muted); font-size: 1.5em; transition: color 0.2s;"><i class="fab fa-tiktok"></i></a>
+        <a href="#" style="color:var(--text-muted); font-size: 1.5em; transition: color 0.2s;"><i class="fab fa-youtube"></i></a>
+    </div>
+    <img src="<%= settings.logo %>" alt="Pocketeer" class="footer-logo">
+    <p>As an Amazon Associate I earn from qualifying purchases.</p>
+    <p>&copy; 2026 Pocketeer. All rights reserved.</p>
+</footer>

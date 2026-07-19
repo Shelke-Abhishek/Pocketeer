@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Pocketeer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #f8f9fa; padding: 20px; color: #333; }
+        .admin-container { max-width: 800px; margin: 0 auto; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        h1, h2 { margin-top: 0; }
+        form { display: flex; flex-direction: column; gap: 15px; }
+        input, select, textarea { padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-family: inherit; width: 100%; box-sizing: border-box; }
+        .submit-btn { background: #333; color: white; border: none; padding: 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .submit-btn:hover { background: #111; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .back-link { text-decoration: none; color: #333; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="header">
+            <h1>Admin Dashboard</h1>
+            <div>
+                <a href="/" class="back-link" style="margin-right: 15px;"><i class="fas fa-arrow-left"></i> View Site</a>
+                <a href="/admin/logout" class="submit-btn" style="text-decoration: none; padding: 8px 12px; font-size: 0.9em; background: #e74c3c;"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Site Settings (Logo & Banner)</h2>
+            <form action="/admin/settings" method="POST" enctype="multipart/form-data">
+                <div>
+                    <label><strong>Current Logo:</strong></label><br>
+                    <img src="<%= settings.logo %>" alt="Logo" style="height: 50px; margin: 10px 0; border: 1px solid #eee;">
+                    <input type="file" name="logo" accept="image/*">
+                </div>
+                <div>
+                    <label><strong>Desktop Hero Banner:</strong></label><br>
+                    <img src="<%= settings.bannerDesktop || '' %>" alt="Desktop Banner" style="height: 60px; max-width: 100%; object-fit: cover; margin: 10px 0; border: 1px solid #eee;">
+                    <input type="file" name="bannerDesktop" accept="image/*">
+                </div>
+                <div>
+                    <label><strong>Tablet Hero Banner:</strong></label><br>
+                    <img src="<%= settings.bannerTablet || '' %>" alt="Tablet Banner" style="height: 60px; max-width: 100%; object-fit: cover; margin: 10px 0; border: 1px solid #eee;">
+                    <input type="file" name="bannerTablet" accept="image/*">
+                </div>
+                <div>
+                    <label><strong>Mobile Hero Banner:</strong></label><br>
+                    <img src="<%= settings.bannerMobile || '' %>" alt="Mobile Banner" style="height: 60px; max-width: 100%; object-fit: cover; margin: 10px 0; border: 1px solid #eee;">
+                    <input type="file" name="bannerMobile" accept="image/*">
+                </div>
+                <button type="submit" class="submit-btn">Update Site Settings</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>Add New Product</h2>
+            <form action="/admin/product" method="POST" enctype="multipart/form-data">
+                <input type="text" name="name" placeholder="Product Name" required>
+                
+                <select name="category" required>
+                    <option value="skincare">Skincare</option>
+                    <option value="perfume">Perfumes</option>
+                    <option value="tech">Tech</option>
+                    <option value="haircare">Haircare</option>
+                    <option value="fitness">Fitness</option>
+                    <option value="dressing">Dressing</option>
+                    <option value="sports">Sports</option>
+                    <option value="groceries">Groceries</option>
+                    <option value="kitchen">Kitchen</option>
+                    <option value="pet">Pet</option>
+                    <option value="all">Other</option>
+                </select>
+
+                <input type="url" name="realLink" placeholder="Amazon Affiliate Link (https://amzn.to/...)" required>
+                
+                <textarea name="shortDesc" rows="2" placeholder="Short description (for SEO meta tags)" required></textarea>
+                <textarea name="fullReview" rows="4" placeholder="Your full review/recommendation..." required></textarea>
+
+                <div style="padding: 15px; background: #f0f0f0; border-radius: 4px;">
+                    <label><strong>Product Image (2:3 Aspect Ratio recommended)</strong></label>
+                    <p style="font-size: 0.9em; margin: 5px 0;">Option 1: Upload Image (e.g. AI Generated)</p>
+                    <input type="file" name="imageFile" accept="image/*">
+                    
+                    <p style="font-size: 0.9em; margin: 10px 0 5px 0;">Option 2: Paste Image URL directly from Amazon</p>
+                    <input type="url" name="imageUrl" placeholder="https://...">
+                </div>
+
+                <button type="submit" class="submit-btn">Add Product</button>
+            </form>
+        </div>
+        
+        <div class="card">
+            <h2>Current Products (<%= products.length %>)</h2>
+            <ul style="padding-left: 20px; list-style: none;">
+                <% products.forEach(p => { %>
+                    <li style="margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span><strong><%= p.name %></strong> (<%= p.category %>)</span>
+                            <div>
+                                <button type="button" class="submit-btn" style="background: #3498db; padding: 5px 10px; font-size: 0.85em; margin-right: 5px;" onclick="document.getElementById('edit-prod-<%= p.id %>').style.display = document.getElementById('edit-prod-<%= p.id %>').style.display === 'none' ? 'block' : 'none';">Edit</button>
+                                <form action="/admin/product/delete" method="POST" style="margin: 0; display: inline;">
+                                    <input type="hidden" name="id" value="<%= p.id %>">
+                                    <button type="submit" class="submit-btn" style="background: #e74c3c; padding: 5px 10px; font-size: 0.85em;">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div id="edit-prod-<%= p.id %>" style="display: none; margin-top: 15px; padding: 15px; background: #f9f9f9; border-radius: 8px;">
+                            <form action="/admin/product/edit" method="POST" enctype="multipart/form-data">
+                                <input type="hidden" name="id" value="<%= p.id %>">
+                                <input type="text" name="name" value="<%= p.name %>" required>
+                                <select name="category" required>
+                                    <option value="skincare" <%= p.category === 'skincare' ? 'selected' : '' %>>Skincare</option>
+                                    <option value="perfume" <%= p.category === 'perfume' ? 'selected' : '' %>>Perfumes</option>
+                                    <option value="tech" <%= p.category === 'tech' ? 'selected' : '' %>>Tech</option>
+                                    <option value="haircare" <%= p.category === 'haircare' ? 'selected' : '' %>>Haircare</option>
+                                    <option value="fitness" <%= p.category === 'fitness' ? 'selected' : '' %>>Fitness</option>
+                                    <option value="dressing" <%= p.category === 'dressing' ? 'selected' : '' %>>Dressing</option>
+                                    <option value="sports" <%= p.category === 'sports' ? 'selected' : '' %>>Sports</option>
+                                    <option value="groceries" <%= p.category === 'groceries' ? 'selected' : '' %>>Groceries</option>
+                                    <option value="kitchen" <%= p.category === 'kitchen' ? 'selected' : '' %>>Kitchen</option>
+                                    <option value="pet" <%= p.category === 'pet' ? 'selected' : '' %>>Pet</option>
+                                    <option value="all" <%= p.category === 'all' ? 'selected' : '' %>>Other</option>
+                                </select>
+                                <input type="url" name="realLink" value="<%= p.realLink %>" required>
+                                <textarea name="shortDesc" rows="2" required><%= p.shortDesc %></textarea>
+                                <textarea name="fullReview" rows="4" required><%= p.fullReview %></textarea>
+                                
+                                <div style="padding: 10px; background: #f0f0f0; border-radius: 4px;">
+                                    <p style="font-size: 0.9em; margin: 0 0 5px 0;">Leave blank to keep current image</p>
+                                    <input type="file" name="imageFile" accept="image/*">
+                                    <input type="url" name="imageUrl" placeholder="Or new Amazon URL">
+                                </div>
+                                <button type="submit" class="submit-btn" style="background: #27ae60;">Save Changes</button>
+                            </form>
+                        </div>
+                    </li>
+                <% }) %>
+            </ul>
+        </div>
+        
+        <div class="card">
+            <h2>Manage Reviews (<%= reviews ? reviews.length : 0 %>)</h2>
+            <% if (reviews && reviews.length > 0) { %>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                <% reviews.forEach(r => { %>
+                    <div style="border: 1px solid #eee; padding: 10px; border-radius: 4px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong><%= r.name %></strong> (Product ID: <%= r.productId %>) - <%= r.rating %> Stars<br>
+                                <span style="color: #666; font-size: 0.9em;"><%= r.comment %></span>
+                            </div>
+                            <div>
+                                <button type="button" class="submit-btn" style="background: #3498db; padding: 8px 12px; margin-right: 5px;" onclick="document.getElementById('edit-rev-<%= r.productId %>-<%= r.date %>').style.display = document.getElementById('edit-rev-<%= r.productId %>-<%= r.date %>').style.display === 'none' ? 'block' : 'none';">Edit</button>
+                                <form action="/admin/review/delete" method="POST" style="margin: 0; display: inline;">
+                                    <input type="hidden" name="id" value="<%= r.productId %>">
+                                    <input type="hidden" name="date" value="<%= r.date %>">
+                                    <button type="submit" class="submit-btn" style="background: #e74c3c; padding: 8px 12px;">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div id="edit-rev-<%= r.productId %>-<%= r.date %>" style="display: none; margin-top: 15px; padding: 15px; background: #f9f9f9; border-radius: 8px;">
+                            <form action="/admin/review/edit" method="POST">
+                                <input type="hidden" name="oldProductId" value="<%= r.productId %>">
+                                <input type="hidden" name="oldDate" value="<%= r.date %>">
+                                <input type="text" name="name" value="<%= r.name %>" required>
+                                <select name="rating" required>
+                                    <option value="5" <%= r.rating == 5 ? 'selected' : '' %>>5 Stars</option>
+                                    <option value="4" <%= r.rating == 4 ? 'selected' : '' %>>4 Stars</option>
+                                    <option value="3" <%= r.rating == 3 ? 'selected' : '' %>>3 Stars</option>
+                                    <option value="2" <%= r.rating == 2 ? 'selected' : '' %>>2 Stars</option>
+                                    <option value="1" <%= r.rating == 1 ? 'selected' : '' %>>1 Star</option>
+                                </select>
+                                <textarea name="comment" rows="2" required><%= r.comment %></textarea>
+                                <button type="submit" class="submit-btn" style="background: #27ae60;">Save Changes</button>
+                            </form>
+                        </div>
+                    </div>
+                <% }) %>
+                </div>
+            <% } else { %>
+                <p>No customer reviews yet.</p>
+            <% } %>
+        </div>
+    </div>
+</body>
+</html>
