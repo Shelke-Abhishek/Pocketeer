@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const compression = require('compression');
 const path = require('path');
 const multer = require('multer');
 const session = require('express-session');
@@ -43,6 +44,7 @@ const storage = new CloudinaryStorage({
 const upload = multer({ storage: storage });
 
 // Middleware
+app.use(compression());
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
