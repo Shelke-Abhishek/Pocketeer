@@ -61,9 +61,43 @@ const auth = (req, res, next) => {
     res.redirect('/login');
 };
 
+// --- IN-MEMORY CACHE ---
+let appCache = {
+    products: null,
+    reviews: null,
+    blogs: null,
+    settings: null
+};
+
+function clearCache() {
+    appCache.products = null;
+    appCache.reviews = null;
+    appCache.blogs = null;
+    appCache.settings = null;
+    console.log("Cache cleared due to data update.");
+}
+
+async function getCachedProducts() {
+    if (!appCache.products) appCache.products = await Product.find({}).lean();
+    return appCache.products;
+}
+
+async function getCachedReviews() {
+    if (!appCache.reviews) appCache.reviews = await Review.find({}).lean();
+    return appCache.reviews;
+}
+
+async function getCachedBlogs() {
+    if (!appCache.blogs) appCache.blogs = await Blog.find({}).lean();
+    return appCache.blogs;
+}
+
 async function getSettings() {
-    const s = await Settings.findOne({ key: 'global' }).lean();
-    return s || {};
+    if (!appCache.settings) {
+        const s = await Settings.findOne({ key: 'global' }).lean();
+        appCache.settings = s || {};
+    }
+    return appCache.settings;
 }
 
 // Login Routes
@@ -83,18 +117,26 @@ app.post('/login', async (req, res) => {
 
 // Public Routes
 app.get('/', async (req, res) => {
-    const products = await Product.find({}).lean();
-    const settings = await getSettings();
-    const reviews = await Review.find({}).lean();
+    const [products, settings, reviews] = await Promise.all([
+        getCachedProducts(),
+        getSettings(),
+        getCachedReviews()
+    ]);
     res.render('index', { products, settings, reviews });
 });
 
 app.get('/product/:id', async (req, res) => {
-    const product = await Product.findOne({ id: req.params.id }).lean();
+    const products = await getCachedProducts();
+    const product = products.find(p => p.id === req.params.id);
     if (!product) return res.status(404).send('Product not found');
-    const settings = await getSettings();
-    const reviews = await Review.find({ productId: product.id }).lean();
-    res.render('product', { product, reviews, settings });
+    
+    const [settings, allReviews] = await Promise.all([
+        getSettings(),
+        getCachedReviews()
+    ]);
+    const productReviews = allReviews.filter(r => r.productId === product.id);
+    
+    res.render('product', { product, reviews: productReviews, settings });
 });
 
 app.post('/product/:id/review', async (req, res) => {
@@ -107,28 +149,35 @@ app.post('/product/:id/review', async (req, res) => {
             comment,
             date: new Date().toISOString()
         });
+        clearCache();
     }
     res.redirect(`/product/${req.params.id}`);
 });
 
 app.get('/redirect', async (req, res) => {
-    const product = await Product.findOne({ id: req.query.id }).lean();
+    const products = await getCachedProducts();
+    const product = products.find(p => p.id === req.query.id);
     if (product && product.realLink) res.redirect(product.realLink);
     else res.status(404).send('Link not found');
 });
 
 app.get('/blog', async (req, res) => {
-    const settings = await getSettings();
-    const blogs = await Blog.find({}).lean();
-    const reviews = await Review.find({}).lean();
+    const [settings, blogs, reviews] = await Promise.all([
+        getSettings(),
+        getCachedBlogs(),
+        getCachedReviews()
+    ]);
     res.render('blog', { settings, blogs, reviews });
 });
 
 app.get('/blog/:id', async (req, res) => {
-    const settings = await getSettings();
-    const post = await Blog.findOne({ id: req.params.id }).lean();
-    const reviews = await Review.find({}).lean();
+    const blogs = await getCachedBlogs();
+    const post = blogs.find(b => b.id === req.params.id);
     if (post) {
+        const [settings, reviews] = await Promise.all([
+            getSettings(),
+            getCachedReviews()
+        ]);
         res.render('blog_post', { settings, post, reviews });
     } else {
         res.redirect('/blog');
@@ -137,31 +186,33 @@ app.get('/blog/:id', async (req, res) => {
 
 // Admin Routes
 app.get('/admin', auth, async (req, res) => {
-    const products = await Product.find({}).lean();
-    const settings = await getSettings();
-    const reviews = await Review.find({}).lean();
+    const [products, settings, reviews] = await Promise.all([
+        getCachedProducts(),
+        getSettings(),
+        getCachedReviews()
+    ]);
     res.render('admin', { products, settings, reviews });
 });
 
 app.get('/admin/logout', async (req, res) => {
     req.session.destroy();
-    const settings = await getSettings();
-    res.render('logout', { settings });
+    res.render('logout', { settings: await getSettings() });
 });
 
 app.post('/admin/review/delete', auth, async (req, res) => {
     await Review.deleteOne({ productId: req.body.id, date: req.body.date });
+    clearCache();
     res.redirect('/admin');
 });
 
 app.post('/admin/product/delete', auth, async (req, res) => {
     await Product.deleteOne({ id: req.body.id });
+    clearCache();
     res.redirect('/admin');
 });
 
 app.post('/admin/product', auth, upload.single('imageFile'), async (req, res) => {
     const { name, category, realLink, shortDesc, fullReview, imageUrl } = req.body;
-    // Multer-Cloudinary returns req.file.path as the secure URL
     const image = req.file ? req.file.path : (imageUrl || '');
     
     await Product.create({
@@ -173,6 +224,7 @@ app.post('/admin/product', auth, upload.single('imageFile'), async (req, res) =>
         fullReview,
         image
     });
+    clearCache();
     res.redirect('/admin');
 });
 
@@ -184,6 +236,7 @@ app.post('/admin/product/edit', auth, upload.single('imageFile'), async (req, re
     else if (imageUrl) updateData.image = imageUrl;
 
     await Product.updateOne({ id }, { $set: updateData });
+    clearCache();
     res.redirect('/admin');
 });
 
@@ -193,6 +246,7 @@ app.post('/admin/review/edit', auth, async (req, res) => {
         { productId: oldProductId, date: oldDate },
         { $set: { name, rating: parseInt(rating), comment } }
     );
+    clearCache();
     res.redirect('/admin');
 });
 
@@ -209,6 +263,7 @@ app.post('/admin/settings', auth, upload.fields([
     if (req.files['bannerMobile']) updateData.bannerMobile = req.files['bannerMobile'][0].path;
     
     await Settings.findOneAndUpdate({ key: 'global' }, { $set: updateData }, { upsert: true });
+    clearCache();
     res.redirect('/admin');
 });
 
