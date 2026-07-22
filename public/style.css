@@ -280,11 +280,23 @@ h1, h2, h3, .product-title {
     gap: 50px;
     align-items: start;
 }
-.product-hero-image img {
+.product-hero-image {
+    max-height: 550px;
     width: 100%;
-    height: auto;
+}
+.product-hero-image img, .swiper-slide img {
+    width: 100%;
+    height: 100%;
+    max-height: 550px;
+    object-fit: contain;
     border-radius: 20px;
     box-shadow: var(--shadow);
+}
+.swiper-pagination-bullet-active {
+    background: var(--accent) !important;
+}
+.swiper-button-next::after, .swiper-button-prev::after {
+    font-size: 24px !important;
 }
 .category-badge {
     background: var(--primary-bg);
@@ -368,6 +380,8 @@ h1, h2, h3, .product-title {
 @media (max-width: 768px) {
     .product-grid { grid-template-columns: repeat(2, 1fr); }
     .product-detail-layout { grid-template-columns: 1fr; gap: 30px;}
+    .product-hero-image { max-height: none; }
+    .product-hero-image img, .swiper-slide img { max-height: 70vh; object-fit: cover; }
     .nav-left, .nav-right { 
         min-width: auto; 
         transition: opacity 0.3s ease, max-width 0.3s ease;

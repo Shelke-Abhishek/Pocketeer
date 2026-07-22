@@ -208,9 +208,18 @@ app.post('/admin/product/delete', auth, async (req, res) => {
     res.redirect('/admin');
 });
 
-app.post('/admin/product', auth, upload.single('imageFile'), async (req, res) => {
-    const { name, category, realLink, shortDesc, fullReview, imageUrl } = req.body;
-    const image = req.file ? req.file.path : (imageUrl || '');
+app.post('/admin/product', auth, upload.array('imageFiles', 10), async (req, res) => {
+    const { name, category, realLink, shortDesc, fullReview, imageUrls } = req.body;
+    
+    let images = [];
+    if (req.files && req.files.length > 0) {
+        images = req.files.map(f => f.path);
+    }
+    
+    if (imageUrls) {
+        const parsedUrls = imageUrls.split(/[\n,]+/).map(url => url.trim()).filter(url => url);
+        images = images.concat(parsedUrls);
+    }
     
     await Product.create({
         id: 'prod-' + Date.now(),
@@ -219,18 +228,31 @@ app.post('/admin/product', auth, upload.single('imageFile'), async (req, res) =>
         realLink,
         shortDesc,
         fullReview,
-        image
+        image: images[0] || '', // Backwards compatibility for single image
+        images
     });
     clearCache();
     res.redirect('/admin');
 });
 
-app.post('/admin/product/edit', auth, upload.single('imageFile'), async (req, res) => {
-    const { id, name, category, realLink, shortDesc, fullReview, imageUrl } = req.body;
+app.post('/admin/product/edit', auth, upload.array('imageFiles', 10), async (req, res) => {
+    const { id, name, category, realLink, shortDesc, fullReview, imageUrls } = req.body;
     let updateData = { name, category, realLink, shortDesc, fullReview };
     
-    if (req.file) updateData.image = req.file.path;
-    else if (imageUrl) updateData.image = imageUrl;
+    let newImages = [];
+    if (req.files && req.files.length > 0) {
+        newImages = req.files.map(f => f.path);
+    }
+    
+    if (imageUrls) {
+        const parsedUrls = imageUrls.split(/[\n,]+/).map(url => url.trim()).filter(url => url);
+        newImages = newImages.concat(parsedUrls);
+    }
+
+    if (newImages.length > 0) {
+        updateData.images = newImages;
+        updateData.image = newImages[0]; // Backwards compatibility
+    }
 
     await Product.updateOne({ id }, { $set: updateData });
     clearCache();

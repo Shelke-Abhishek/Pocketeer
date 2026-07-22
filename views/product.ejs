@@ -10,6 +10,7 @@
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <link rel="stylesheet" href="/style.css">
     <script>
         (function() {
@@ -37,7 +38,23 @@
 
     <main class="main-content product-detail-layout">
         <div class="product-hero-image">
-            <img src="<%= product.image %>" alt="<%= product.name %>">
+            <% if (product.images && product.images.length > 0) { %>
+                <div class="swiper" style="width: 100%; height: 100%;">
+                    <div class="swiper-wrapper">
+                        <% product.images.forEach(function(imgUrl) { %>
+                            <div class="swiper-slide" style="display: flex; justify-content: center; align-items: center;">
+                                <img src="<%= imgUrl %>" alt="<%= product.name %>">
+                            </div>
+                        <% }); %>
+                    </div>
+                    <div class="swiper-pagination"></div>
+                    <!-- Optional Navigation arrows, can remove if you only want swipe/dots -->
+                    <div class="swiper-button-prev" style="color: var(--accent);"></div>
+                    <div class="swiper-button-next" style="color: var(--accent);"></div>
+                </div>
+            <% } else { %>
+                <img src="<%= product.image %>" alt="<%= product.name %>">
+            <% } %>
         </div>
         
         <div class="product-content">
@@ -101,5 +118,20 @@
     <%- include('footer.ejs', {reviews: reviews, settings: settings}) %>
 
     <script src="/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+        const swiper = new Swiper('.swiper', {
+            loop: true,
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+            grabCursor: true
+        });
+    </script>
 </body>
 </html>

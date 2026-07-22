@@ -90,12 +90,12 @@
                 <textarea name="fullReview" rows="4" placeholder="Your full review/recommendation..." required></textarea>
 
                 <div style="padding: 15px; background: #f0f0f0; border-radius: 4px;">
-                    <label><strong>Product Image (2:3 Aspect Ratio recommended)</strong></label>
-                    <p style="font-size: 0.9em; margin: 5px 0;">Option 1: Upload Image (e.g. AI Generated)</p>
-                    <input type="file" name="imageFile" accept="image/*">
+                    <label><strong>Product Images (Upload multiple)</strong></label>
+                    <p style="font-size: 0.9em; margin: 5px 0;">Option 1: Upload Images (e.g. AI Generated)</p>
+                    <input type="file" name="imageFiles" accept="image/*" multiple>
                     
-                    <p style="font-size: 0.9em; margin: 10px 0 5px 0;">Option 2: Paste Image URL directly from Amazon</p>
-                    <input type="url" name="imageUrl" placeholder="https://...">
+                    <p style="font-size: 0.9em; margin: 10px 0 5px 0;">Option 2: Paste Multiple Image URLs (One per line)</p>
+                    <textarea name="imageUrls" rows="3" placeholder="https://...&#10;https://..."></textarea>
                 </div>
 
                 <button type="submit" class="submit-btn">Add Product</button>
@@ -139,9 +139,9 @@
                                 <textarea name="fullReview" rows="4" required><%= p.fullReview %></textarea>
                                 
                                 <div style="padding: 10px; background: #f0f0f0; border-radius: 4px;">
-                                    <p style="font-size: 0.9em; margin: 0 0 5px 0;">Leave blank to keep current image</p>
-                                    <input type="file" name="imageFile" accept="image/*">
-                                    <input type="url" name="imageUrl" placeholder="Or new Amazon URL">
+                                    <p style="font-size: 0.9em; margin: 0 0 5px 0;">Upload new images or paste URLs (Leave blank to keep current images)</p>
+                                    <input type="file" name="imageFiles" accept="image/*" multiple>
+                                    <textarea name="imageUrls" rows="2" placeholder="Or new Amazon URLs (one per line)"></textarea>
                                 </div>
                                 <button type="submit" class="submit-btn" style="background: #27ae60;">Save Changes</button>
                             </form>

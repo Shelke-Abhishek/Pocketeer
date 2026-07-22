@@ -87,7 +87,7 @@
                     <a href="/product/<%= product.id %>" class="card-link-wrapper">
                         <div class="product-image">
                             <!-- Natural aspect ratios for Masonry! -->
-                            <img src="<%= product.image %>" alt="<%= product.name %>" loading="lazy">
+                            <img src="<%= product.images && product.images.length > 0 ? product.images[0] : product.image %>" alt="<%= product.name %>" loading="lazy">
                         </div>
                         <div class="product-info">
                             <h3 class="product-title"><%= product.name %></h3>
