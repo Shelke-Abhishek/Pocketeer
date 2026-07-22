@@ -156,12 +156,7 @@ app.post('/product/:id/review', async (req, res) => {
     res.redirect(`/product/${req.params.id}`);
 });
 
-app.get('/redirect', async (req, res) => {
-    const products = await getCachedProducts();
-    const product = products.find(p => p.id === req.query.id);
-    if (product && product.realLink) res.redirect(product.realLink);
-    else res.status(404).send('Link not found');
-});
+
 
 app.get('/blog', async (req, res) => {
     const [settings, blogs, reviews] = await Promise.all([
