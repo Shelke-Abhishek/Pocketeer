@@ -6,10 +6,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function setTheme(theme) {
         if (theme == "dark") {
-            document.body.setAttribute('data-theme', 'dark');
+            document.documentElement.setAttribute('data-theme', 'dark');
             if(themeToggle) themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
         } else {
-            document.body.removeAttribute('data-theme');
+            document.documentElement.removeAttribute('data-theme');
             if(themeToggle) themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
         }
         localStorage.setItem("theme", theme);
@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if(themeToggle) {
         themeToggle.addEventListener('click', () => {
-            const isDark = document.body.getAttribute('data-theme') === 'dark';
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
             setTheme(isDark ? "light" : "dark");
         });
     }

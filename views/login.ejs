@@ -16,6 +16,15 @@
         .submit-btn:active { transform: scale(0.98); }
         .error { color: #e74c3c; margin-bottom: 15px; }
     </style>
+    <script>
+        (function() {
+            var currentTheme = localStorage.getItem("theme");
+            var prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
+            if (currentTheme === "dark" || (!currentTheme && prefersDarkScheme.matches)) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        })();
+    </script>
 </head>
 <body>
     <div class="login-container">

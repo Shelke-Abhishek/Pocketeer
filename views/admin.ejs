@@ -18,6 +18,15 @@
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .back-link { text-decoration: none; color: #333; font-weight: bold; }
     </style>
+    <script>
+        (function() {
+            var currentTheme = localStorage.getItem("theme");
+            var prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
+            if (currentTheme === "dark" || (!currentTheme && prefersDarkScheme.matches)) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        })();
+    </script>
 </head>
 <body>
     <div class="admin-container">
