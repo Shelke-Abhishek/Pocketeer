@@ -17,16 +17,16 @@ mongoose.connect(process.env.MONGO_URI)
     .catch(err => console.error('MongoDB connection error:', err));
 
 // MongoDB Schemas & Models
-const productSchema = new mongoose.Schema({}, { strict: false });
+const productSchema = new mongoose.Schema({ id: String }, { strict: false, id: false });
 const Product = mongoose.model('Product', productSchema);
 
-const reviewSchema = new mongoose.Schema({}, { strict: false });
+const reviewSchema = new mongoose.Schema({ productId: String, date: String }, { strict: false, id: false });
 const Review = mongoose.model('Review', reviewSchema);
 
-const blogSchema = new mongoose.Schema({}, { strict: false });
+const blogSchema = new mongoose.Schema({ id: String }, { strict: false, id: false });
 const Blog = mongoose.model('Blog', blogSchema);
 
-const settingsSchema = new mongoose.Schema({}, { strict: false });
+const settingsSchema = new mongoose.Schema({ key: String }, { strict: false, id: false });
 const Settings = mongoose.model('Settings', settingsSchema);
 
 // Configure Cloudinary
