@@ -112,8 +112,18 @@ document.addEventListener('DOMContentLoaded', () => {
             if ((selectedCategory === "all" || cardCategory === selectedCategory) &&
                 productName.includes(searchText)) {
                 card.style.display = 'block';
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'scale(1)';
+                }, 10);
             } else {
-                card.style.display = 'none';
+                card.style.opacity = '0';
+                card.style.transform = 'scale(0.9)';
+                setTimeout(() => {
+                    if (card.style.opacity === '0') {
+                        card.style.display = 'none';
+                    }
+                }, 300);
             }
         });
     }

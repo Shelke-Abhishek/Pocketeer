@@ -239,7 +239,7 @@ h1, h2, h3, .product-title {
     box-shadow: var(--shadow);
     margin-bottom: 20px;
     /* Converted to Grid, break-inside no longer needed */
-    transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
+    transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s, opacity 0.3s;
     animation: fadeUp 0.8s ease-out backwards;
 }
 /* Stagger animations for cards */
