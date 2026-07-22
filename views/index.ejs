@@ -92,14 +92,7 @@
 
     <%- include('footer.ejs', {reviews: reviews, settings: settings}) %>
 
-    <!-- Popup Container -->
-    <div id="purchase-popup" class="purchase-popup">
-        <img id="popup-img" src="" alt="Product">
-        <div class="purchase-popup-text">
-            <strong id="popup-title"></strong>
-            <span id="popup-desc"></span>
-        </div>
-    </div>
+
     
     <script>
         window.POCK_PRODUCTS = <%- JSON.stringify(products) %>;
